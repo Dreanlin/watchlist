@@ -182,6 +182,16 @@ def bad_request(e):
 def internal_server_error(e):
     return render_template('500.html'), 500
 
+
+@app.cli.command()  # 注册为命令
+@click.option('--drop', is_flag=True, help='Create after drop.')  # 设置选项
+def initdb(drop):
+    """Initialize the database."""
+    if drop:  # 判断是否输入了选项
+        db.drop_all()
+    db.create_all()
+    click.echo('Initialized database.')  # 输出提示信息
+
 #编写一个命令来创建管理员账户
 @app.cli.command()
 @click.option('--username', prompt=True, help='The username used to login.')
@@ -201,7 +211,7 @@ def admin(username, password):
         db.session.add(user)
 
     db.session.commit()  # 提交数据库会话
-    click.echo('Admin user added into user table.')
+    click.echo('User table changed. Done.')
 
 #创建数据库movie表的虚拟数据并填入虚拟数据
 @app.cli.command()
@@ -226,4 +236,4 @@ def forge():
         db.session.add(movie)
 
     db.session.commit()
-    click.echo('movie table created.')
+    click.echo('movie table created. Done.')
